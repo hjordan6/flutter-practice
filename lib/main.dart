@@ -51,7 +51,8 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         body: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisSize: MainAxisSize.max,
             children: <Widget>[
               Top(),
               Bottom(),
@@ -65,19 +66,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class Top extends StatelessWidget {
   final TextEditingController controller = new TextEditingController();
-  
   @override
   Widget build(BuildContext context) {
+    User user = Provider.of<User>(context);
     return Container(
+      padding: EdgeInsets.all(10),
       child: Column(
         children: <Widget>[
           TextField(
             controller: controller,
-            onChanged: Provider.of<User>(context).setFirstName,
           ),
           RaisedButton(
             child: Text("Submit"),
-            onPressed: Provider.of<User>(context).setFirstName(controller.text).update,
+            onPressed: () => user.setFirstName(controller.text),
           ),
         ],
       ),
@@ -88,7 +89,8 @@ class Top extends StatelessWidget {
 class Bottom extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Container(
+      padding: EdgeInsets.all(10),
       child: Text(Provider.of<User>(context).name),
     );
   }
