@@ -1,6 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() => runApp(MyApp());
+
+class User with ChangeNotifier {
+  User({this.name, this.email, this.age});
+  User setFirstName(String newName) {
+    this.name = newName;
+    notifyListeners();
+    return this;
+  }
+  update() {
+    notifyListeners();
+  }
+  String name;
+  String email;
+  int age;
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -24,38 +40,56 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+    return ChangeNotifierProvider<User>(
+        create: (context) => new User(age: 32, name: 'Sarah', email: 'sarah@email.com'),
+        child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Top(),
+              Bottom(),
+            ],
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
+    );
+  }
+}
+
+class Top extends StatelessWidget {
+  final TextEditingController controller = new TextEditingController();
+  
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          TextField(
+            controller: controller,
+            onChanged: Provider.of<User>(context).setFirstName,
+          ),
+          RaisedButton(
+            child: Text("Submit"),
+            onPressed: Provider.of<User>(context).setFirstName(controller.text).update,
+          ),
+        ],
       ),
+    );
+  }
+}
+
+class Bottom extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(Provider.of<User>(context).name),
     );
   }
 }
