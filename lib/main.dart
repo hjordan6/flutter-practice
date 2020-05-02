@@ -22,12 +22,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+    return ChangeNotifierProvider<User>(
+        create: (context) => new User(age: 32, name: 'Sarah', email: 'sarah@email.com'),
+        child: MaterialApp(
+          title: 'Flutter Demo',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          home: MyHomePage(title: 'Flutter Demo Home Page'),
+        ),
     );
   }
 }
@@ -40,27 +43,22 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<User>(
-        create: (context) => new User(age: 32, name: 'Sarah', email: 'sarah@email.com'),
-        child: Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              Top(),
-              Bottom(),
-            ],
-          ),
-        ),
+    return Scaffold(
+    appBar: AppBar(
+      title: Text(widget.title),
+    ),
+    body: Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          Bottom(context),
+        ],
       ),
-    );
+    ),
+      );
   }
 }
 
@@ -69,29 +67,47 @@ class Top extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     User user = Provider.of<User>(context);
-    return Container(
-      padding: EdgeInsets.all(10),
-      child: Column(
-        children: <Widget>[
-          TextField(
-            controller: controller,
-          ),
-          RaisedButton(
-            child: Text("Submit"),
-            onPressed: () => user.setFirstName(controller.text),
-          ),
-        ],
+    return Scaffold(
+      appBar: AppBar(),
+      body: Container(
+        padding: EdgeInsets.all(10),
+        child: Column(
+          children: <Widget>[
+            TextField(
+              controller: controller,
+              onChanged: (newName) => user.setFirstName(newName),
+            ),
+            RaisedButton(
+              child: Text("Submit"),
+              onPressed: () { 
+                user.setFirstName(controller.text); 
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 class Bottom extends StatelessWidget {
+  Bottom(this.parent);
+  final BuildContext parent;
   @override
   Widget build(BuildContext context) {
+    User user = Provider.of<User>(context);
     return Container(
       padding: EdgeInsets.all(10),
-      child: Text(Provider.of<User>(context).name),
+      child: Column(
+        children: <Widget>[
+          Text(user.name),
+          FlatButton(
+            child: Text("Go"),
+            onPressed: () => Navigator.of(parent).push(new MaterialPageRoute(builder: (parent) => new Top())),
+          ),
+        ],
+      ),
     );
   }
 }
